@@ -7,7 +7,8 @@ export const AuthSchema = new mongoose.Schema( {
     },
     email: {
         type: String,
-        required: [ true, 'Email is required' ]
+        required: [ true, 'Email is required' ],
+        unique: [ true, 'Email is already taken' ]
     },
     password: {
         type: String,

@@ -13,3 +13,8 @@ type Query {
   hello: String!
   users: [UserDto!]!
 }
+
+type Mutation {
+  register(password: String!, email: String!, name: String!): UserDto!
+  delete(id: String!): UserDto!
+}

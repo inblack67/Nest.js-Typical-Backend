@@ -11,7 +11,7 @@ export class UserDto
     password: string;
     
     @Field()
-    createdAt: string;
+    createdAt?: string;
     @Field()
-    _id: string;
+    _id?: string;
 }

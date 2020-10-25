@@ -7,5 +7,6 @@ export class RegisterDto
     name: string;
     @Field()
     email: string;
+    // dont select
     password: string;
 }
