@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IAuth } from './auth.interface';
@@ -15,20 +15,55 @@ export class AuthService
 
     async users (): Promise<IAuth[]>
     {
-        return this.userModel.find();
+        return await this.userModel.find();
+    }
+
+    async findById (
+        id: string
+    )
+    {
+        const user = await this.userModel.findById( id );
+        if ( !user )
+        {
+            throw new HttpException( 'Invalid Credentials', 401 );
+        }
+        return user;
+    }
+
+    async findByEmail (
+        email: string
+    )
+    {
+        const user = await this.userModel.findOne( { email } );
+        if ( !user )
+        {
+            throw new HttpException( 'Invalid Credentials', 401 );
+        }
+        return user;
     }
 
     async register (
         data: RegisterDto
     ): Promise<UserDto>
     {
-        return this.userModel.create( data );
+        try
+        {
+            return await this.userModel.create( data );
+        } catch ( err )
+        {
+            if ( err.code === 11000 )
+            {
+
+                throw new HttpException( 'Email is already taken', 401 );
+            }
+            throw new HttpException( err, 400 );
+        }
     }
 
     async delete (
         id: string
     ): Promise<UserDto>
     {
-        return this.userModel.findByIdAndDelete( id );
+        return await this.userModel.findByIdAndDelete( id );
     }
 }

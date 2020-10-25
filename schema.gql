@@ -12,9 +12,12 @@ type UserDto {
 type Query {
   hello: String!
   users: [UserDto!]!
+  getMe: UserDto!
 }
 
 type Mutation {
   register(password: String!, email: String!, name: String!): UserDto!
+  login(password: String!, email: String!): UserDto!
+  logout: Boolean!
   delete(id: String!): UserDto!
 }

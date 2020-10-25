@@ -1,8 +1,9 @@
+import { HttpException } from "@nestjs/common";
 import { Resolver, Query, Mutation, Args, Context } from "@nestjs/graphql";
-import { ErrorResponse } from "src/utils/errorResponse";
 import { MyContext } from "src/utils/types";
 import { AuthService } from "./auth.service";
 import { UserDto } from "./dto/user.dto";
+import argon from 'argon2';
 
 @Resolver()
 export class AuthResolver
@@ -17,11 +18,9 @@ export class AuthResolver
 
     @Query( () => [ UserDto ] )
     async users (
-        @Context() { }: MyContext
     ): Promise<UserDto[]>
     {
-        throw new ErrorResponse( 'nah', 400 );
-        // return await this.authService.users();
+        return this.authService.users();
     }
 
     @Mutation( () => UserDto )
@@ -29,9 +28,77 @@ export class AuthResolver
         @Args( 'name' ) name: string,
         @Args( 'email' ) email: string,
         @Args( 'password' ) password: string,
+        @Context() { req }: MyContext
     ): Promise<UserDto>
     {
-        return this.authService.register( { name, email, password } );
+        if ( req.session.user )
+        {
+            throw new HttpException( 'Not Authorized', 401 );
+        }
+        const hashedPassword = await argon.hash( password );
+        const newUser = await this.authService.register( { name, email, password: hashedPassword } );
+
+        req.session.user = newUser._id;
+
+        return newUser;
+    }
+
+    @Mutation( () => UserDto )
+    async login (
+        @Args( 'email' ) email: string,
+        @Args( 'password' ) password: string,
+        @Context() { req }: MyContext
+    ): Promise<UserDto>
+    {
+        if ( req.session.user )
+        {
+            throw new HttpException( 'Not Authorized', 401 );
+        }
+
+        const user = await this.authService.findByEmail( email );
+
+        req.session.user = user._id;
+
+        return user;
+    }
+
+    @Mutation( () => Boolean )
+    async logout (
+        @Context() { req }: MyContext
+    )
+    {
+        const currentUser = req.session.user;
+
+        if ( !currentUser )
+        {
+            throw new HttpException( 'Not Authenticated', 401 );
+        }
+
+        req.session.destroy( ( err ) =>
+        {
+            if ( err )
+            {
+                console.error( err );
+            }
+        } );
+        return true;
+    }
+
+
+    @Query( () => UserDto )
+    async getMe (
+        @Context() { req }: MyContext
+    )
+    {
+        const currentUser = req.session.user;
+
+        if ( !currentUser )
+        {
+            throw new HttpException( 'Not Authenticated', 401 );
+        }
+
+        const user = await this.authService.findById( currentUser );
+        return user;
     }
 
     @Mutation( () => UserDto )
