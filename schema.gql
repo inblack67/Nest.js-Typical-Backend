@@ -47,3 +47,7 @@ type Mutation {
   createPost(text: String, title: String!): PostDto!
   deletePost(id: String!): PostDto!
 }
+
+type Subscription {
+  postSub: PostDto!
+}

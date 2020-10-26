@@ -1,10 +1,11 @@
 import { HttpException } from "@nestjs/common";
-import { Resolver, Query, Mutation, Args, Context } from "@nestjs/graphql";
+import { Resolver, Query, Mutation, Args, Context, Subscription } from "@nestjs/graphql";
 import { MyContext } from "src/utils/types";
 import { PostService } from "./post.service";
 import { PostDto } from "./dto/post.dto";
+import { POST_ADDED } from "src/utils/constants";
 
-@Resolver('post')
+@Resolver( 'post' )
 export class PostResolver
 {
     constructor ( private readonly postService: PostService ) { }
@@ -13,6 +14,14 @@ export class PostResolver
     hello (): string
     {
         return 'nest';
+    }
+
+    @Subscription( () => PostDto )
+    async postSub (
+        @Context() { pubsub }: MyContext
+    )
+    {
+        return pubsub.asyncIterator( POST_ADDED );
     }
 
     @Query( () => [ PostDto ] )
@@ -26,7 +35,7 @@ export class PostResolver
     async createPost (
         @Args( 'title' ) title: string,
         @Args( 'text', { nullable: true } ) text: string,
-        @Context() { req }: MyContext
+        @Context() { req, pubsub }: MyContext
     ): Promise<PostDto>
     {
         const currentUser: string = req.session.user;
@@ -36,6 +45,8 @@ export class PostResolver
         }
 
         const newPost = await this.postService.createPost( { title, text, user: currentUser } );
+
+        pubsub.publish( POST_ADDED, { postSub: newPost } );
 
         return newPost;
     }

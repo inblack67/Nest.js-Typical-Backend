@@ -37,7 +37,9 @@ export class PostService
     {
         try
         {
-            return await this.postModel.create( data );
+            const createdPost = await this.postModel.create( data );
+            const newPost = await this.postModel.findById( createdPost._id ).populate( 'user' );
+            return newPost;
         } catch ( err )
         {
             if ( err.code === 11000 )
