@@ -13,3 +13,4 @@
   - MongoDB
   - Mongoose
   - Typescript
+  - Redis
