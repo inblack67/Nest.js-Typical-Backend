@@ -44,8 +44,22 @@ export class PostResolver
     @Mutation( () => PostDto )
     async deletePost (
         @Args( 'id' ) id: string,
+        @Context() { req }: MyContext
     ): Promise<PostDto>
     {
+        const currentUser = req.session.user;
+        if ( !currentUser )
+        {
+            throw new HttpException( 'Not Authenticated', 401 );
+            throw new HttpException( 'Not Authenticated', 401 );
+        }
+        const post = await this.postService.findById( id );
+
+        if ( post.user.toString() !== currentUser )
+        {
+            throw new HttpException( 'Not Authorized', 401 );
+
+        }
         return this.postService.delete( id );
     }
 }

@@ -13,14 +13,14 @@ export class PostService
         private readonly postModel: Model<IPost> )
     { }
 
-    async posts (): Promise<IPost[]>
+    async posts (): Promise<PostDto[]>
     {
         return await this.postModel.find().populate( 'user' );
     }
 
     async findById (
         id: string
-    )
+    ): Promise<PostDto>
     {
         const post = await this.postModel.findById( id );
         if ( !post )
