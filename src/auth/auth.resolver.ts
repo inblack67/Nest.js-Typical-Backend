@@ -5,7 +5,7 @@ import { AuthService } from "./auth.service";
 import { UserDto } from "./dto/user.dto";
 import argon from 'argon2';
 
-@Resolver()
+@Resolver('auth')
 export class AuthResolver
 {
     constructor ( private readonly authService: AuthService ) { }

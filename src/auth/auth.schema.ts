@@ -19,4 +19,14 @@ export const AuthSchema = new mongoose.Schema( {
         type: Date,
         default: Date.now()
     }
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+} );
+
+AuthSchema.virtual( 'posts', {
+    ref: 'Post',
+    localField: '_id',
+    foreignField: 'user',
+    justOne: false,
 } );

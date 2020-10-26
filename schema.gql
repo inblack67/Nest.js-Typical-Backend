@@ -2,9 +2,24 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type PostPopulatedWithUser {
+  email: String!
+  name: String!
+  _id: String!
+  createdAt: String!
+}
+
+type UserPopulatedWithPosts {
+  title: String
+  text: String
+  _id: String
+  createdAt: String!
+}
+
 type UserDto {
   name: String!
   email: String!
+  posts: [UserPopulatedWithPosts!]
   createdAt: String!
   _id: String!
 }
@@ -12,7 +27,7 @@ type UserDto {
 type PostDto {
   title: String!
   text: String
-  user: UserDto!
+  user: PostPopulatedWithUser!
   createdAt: String!
   _id: String!
 }

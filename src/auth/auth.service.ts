@@ -15,14 +15,15 @@ export class AuthService
 
     async users (): Promise<IAuth[]>
     {
-        return await this.userModel.find();
+        const users = await this.userModel.find().populate( 'posts' );
+        return users;
     }
 
     async findById (
         id: string
     )
     {
-        const user = await this.userModel.findById( id );
+        const user = await this.userModel.findById( id ).populate( 'posts' );
         if ( !user )
         {
             throw new HttpException( 'Invalid Credentials', 401 );

@@ -4,7 +4,7 @@ import { MyContext } from "src/utils/types";
 import { PostService } from "./post.service";
 import { PostDto } from "./dto/post.dto";
 
-@Resolver()
+@Resolver('post')
 export class PostResolver
 {
     constructor ( private readonly postService: PostService ) { }

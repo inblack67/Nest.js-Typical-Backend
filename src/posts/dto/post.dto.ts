@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { UserDto } from "src/auth/dto/user.dto";
+import { PostPopulatedWithUser } from "src/populatedDto";
 
 @ObjectType()
 export class PostDto
@@ -11,7 +11,7 @@ export class PostDto
     text?: string;
 
     @Field()
-    user?: UserDto;
+    user?: PostPopulatedWithUser;
 
     @Field()
     createdAt?: string;
