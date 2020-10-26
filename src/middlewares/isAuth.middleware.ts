@@ -1,14 +1,16 @@
-import { MyContext } from "../utils/types";
-import { MiddlewareFn } from "type-graphql";
-import { HttpException } from "@nestjs/common";
+import { HttpException, Injectable, NestMiddleware } from "@nestjs/common";
+import { Request, Response, NextFunction } from "express";
 
-export const isAuth: MiddlewareFn<MyContext> = ( { context }, next ) =>
+@Injectable()
+export class isAuthMiddleware implements NestMiddleware
 {
-    const currentUser = context.req.session.user;
-
-    if ( !currentUser )
+    use ( req: Request, _: Response, next: NextFunction )
     {
-        throw new HttpException( 'Not Authenticated', 401 );
+        const currentUser: string = req.session.user;
+        if ( !currentUser )
+        {
+            throw new HttpException( 'Not Authenticated', 401 );
+        }
+        next();
     }
-    return next();
-};
+}

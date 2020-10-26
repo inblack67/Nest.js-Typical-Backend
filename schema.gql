@@ -9,10 +9,19 @@ type UserDto {
   _id: String!
 }
 
+type PostDto {
+  title: String!
+  text: String
+  user: UserDto!
+  createdAt: String!
+  _id: String!
+}
+
 type Query {
   hello: String!
   users: [UserDto!]!
   getMe: UserDto!
+  posts: [PostDto!]!
 }
 
 type Mutation {
@@ -20,4 +29,6 @@ type Mutation {
   login(password: String!, email: String!): UserDto!
   logout: Boolean!
   delete(id: String!): UserDto!
+  createPost(text: String, title: String!): PostDto!
+  deletePost(id: String!): PostDto!
 }
