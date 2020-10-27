@@ -12,7 +12,7 @@ import { pubsub } from './utils/pubsub';
 @Module( {
   imports: [ ConfigModule.forRoot(), MongooseModule.forRoot( process.env.MONGO_URI ), GraphQLModule.forRoot( {
     cors: {
-      origin: process.env.CLIENT_URL,
+      origin: process.env.CLIENT_URL || 'http://localhost:3000',
       credentials: true,
     },
     autoSchemaFile: 'schema.gql',
