@@ -1,16 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import session from 'express-session';
-import Redis from 'ioredis';
-import connectRedis from 'connect-redis';
+import connectMongo from 'connect-mongo';
 import morgan from 'morgan';
 import 'colors';
 import { __prod__ } from './utils/constants';
 
 async function bootstrap ()
 {
-  const RedisClient = new Redis();
-  const RedisStore = connectRedis( session );
+
+  const MongoStore = connectMongo( session );
 
   const app = await NestFactory.create( AppModule );
 
@@ -20,7 +19,7 @@ async function bootstrap ()
 
   app.use(
     session( {
-      store: new RedisStore( { client: RedisClient } ),
+      store: new MongoStore( { url: process.env.MONGO_URI } ),
       name: 'quid',
       secret: process.env.SESSION_SECRET,
       resave: false, // no revival
