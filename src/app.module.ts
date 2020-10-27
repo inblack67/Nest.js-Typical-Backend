@@ -11,9 +11,13 @@ import { pubsub } from './utils/pubsub';
 
 @Module( {
   imports: [ ConfigModule.forRoot(), MongooseModule.forRoot( process.env.MONGO_URI ), GraphQLModule.forRoot( {
+    cors: {
+      origin: process.env.CLIENT_URL,
+      credentials: true,
+    },
     autoSchemaFile: 'schema.gql',
     installSubscriptionHandlers: true,
-    context: ( { req, res } ) => ( { req, res, pubsub } )
+    context: ( { req, res } ) => ( { req, res, pubsub } ),
   } ), AuthModule, PostModule ],
   controllers: [ AppController ],
   providers: [ AppService ],
